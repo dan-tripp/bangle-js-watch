@@ -41,16 +41,24 @@ function refreshTimeElapsed() {
 function refreshWalkRunCycleTime() {
 	let WALK_SECONDS = 30;
 	let RUN_SECONDS = 4*60 + 30;
-	WALK_SECONDS = 13; // tdr 
-	RUN_SECONDS = 3; // tdr 
+	//WALK_SECONDS = 8; 
+	//RUN_SECONDS = 15; 
+	let WALK_END_BUZZ_SECONDS = 10;
+	let RUN_END_BUZZ_SECONDS = 10;
+	//WALK_END_BUZZ_SECONDS = 3;
+	//RUN_END_BUZZ_SECONDS = 10;
 
 	let timeElapsedInSeconds = Math.floor(getTime() - g_t0);
-	let walkPlusRunCycleTimeInSeconds = WALK_SECONDS + RUN_SECONDS;
-	let timeElapsedInSecondsModCycle = timeElapsedInSeconds % walkPlusRunCycleTimeInSeconds;
-	let minutes = Math.floor((timeElapsedInSecondsModCycle % 3600) / 60);
-	let seconds = timeElapsedInSecondsModCycle % 60;
+	let WALK_PLUS_RUN_SECONDS = WALK_SECONDS + RUN_SECONDS;
+	let timeElapsedInSecondsModCycle = timeElapsedInSeconds % WALK_PLUS_RUN_SECONDS;
+	let areWeInWalkNotRun = timeElapsedInSecondsModCycle < WALK_SECONDS;
+	let countDownSecondsToDisplay = areWeInWalkNotRun 
+		? WALK_SECONDS - timeElapsedInSecondsModCycle 
+		: WALK_PLUS_RUN_SECONDS - timeElapsedInSecondsModCycle;
+	let countDownMinutes = Math.floor((countDownSecondsToDisplay % 3600) / 60);
+	let countDownSeconds = countDownSecondsToDisplay % 60;
 
-	let minutesAndSecondsStr = `${minutes.toString()}:${seconds.toString().padStart(2, "0")}`;
+	let countDownMinutesAndSecondsStr = `${countDownMinutes.toString()}:${countDownSeconds.toString().padStart(2, "0")}`;
 
 	g.reset();
 
@@ -58,21 +66,23 @@ function refreshWalkRunCycleTime() {
 	let y = 162;
 	g.setFontAlign(-1,1); // align bottom left
 	g.setFont("Vector", FONT_SIZE_MAIN);
-	g.drawString(minutesAndSecondsStr, x, y, true /*clear background*/);
+	g.drawString(countDownMinutesAndSecondsStr, x, y, true /*clear background*/);
 
-	let areWeInWalkNotRun = timeElapsedInSecondsModCycle < WALK_SECONDS;
 	let runVsWalkStr = (areWeInWalkNotRun ? 'WALK' : 'RUN') + '     ';
 	g.setFontAlign(-1,1);
 	g.setFont("Vector", FONT_SIZE_MAIN/2);
 	g.drawString(runVsWalkStr, x+100, y-10, true /*clear background*/);
 
-	let WALK_END_BUZZ_SECONDS = 10;
-	let areWeNearTheEndOfWalkCycle = timeElapsedInSecondsModCycle >= WALK_SECONDS - WALK_END_BUZZ_SECONDS && timeElapsedInSecondsModCycle < WALK_SECONDS; 
-	if(areWeNearTheEndOfWalkCycle) {
-		buzz();
+	if(areWeInWalkNotRun) {
+		let areWeNearTheEndOfWalkCycle = timeElapsedInSecondsModCycle >= WALK_SECONDS - WALK_END_BUZZ_SECONDS; 
+		if(areWeNearTheEndOfWalkCycle) {
+			buzz();
+		}
 	} else {
-		let RUN_END_BUZZ_SECONDS = 10;
-		let areWeNearTheEndOfRunCycle = timeElapsedInSecondsModCycle >= walkPlusRunCycleTimeInSeconds - RUN_END_BUZZ_SECONDS; 
+		let areWeNearTheEndOfRunCycle = timeElapsedInSecondsModCycle >= WALK_PLUS_RUN_SECONDS - RUN_END_BUZZ_SECONDS; 
+		if(areWeNearTheEndOfRunCycle) {
+			buzz();
+		}
 	}
 
 }
