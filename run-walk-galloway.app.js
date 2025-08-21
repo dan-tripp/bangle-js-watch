@@ -3,7 +3,7 @@ let FONT_SIZE_MAIN = 45;
 
 let g_t0 = getTime();
 
-function drawTimeOfDay() {
+function refreshTimeOfDay() {
 	// X/Y are the position of the bottom right of the HH:MM text 
 	const x = g.getWidth()/2 + 70;
 	let y = 58;
@@ -20,7 +20,7 @@ function drawTimeOfDay() {
 
 }
 
-function drawTimeElapsed() {
+function refreshTimeElapsed() {
 	let timeElapsedInSeconds = Math.floor(getTime() - g_t0);
 	let hours = Math.floor(timeElapsedInSeconds / 3600);
 	let minutes = Math.floor((timeElapsedInSeconds % 3600) / 60);
@@ -38,10 +38,10 @@ function drawTimeElapsed() {
 
 }
 
-function drawWalkRunCycleTime() {
+function refreshWalkRunCycleTime() {
 	let WALK_SECONDS = 30;
 	let RUN_SECONDS = 4*60 + 30;
-	WALK_SECONDS = 2; // tdr 
+	WALK_SECONDS = 13; // tdr 
 	RUN_SECONDS = 3; // tdr 
 
 	let timeElapsedInSeconds = Math.floor(getTime() - g_t0);
@@ -54,8 +54,8 @@ function drawWalkRunCycleTime() {
 
 	g.reset();
 
-	let x = 3;
-	let y = 165;
+	let x = 9;
+	let y = 162;
 	g.setFontAlign(-1,1); // align bottom left
 	g.setFont("Vector", FONT_SIZE_MAIN);
 	g.drawString(minutesAndSecondsStr, x, y, true /*clear background*/);
@@ -64,21 +64,40 @@ function drawWalkRunCycleTime() {
 	let runVsWalkStr = (areWeInWalkNotRun ? 'WALK' : 'RUN') + '     ';
 	g.setFontAlign(-1,1);
 	g.setFont("Vector", FONT_SIZE_MAIN/2);
-	g.drawString(runVsWalkStr, x+5, y-10, true /*clear background*/);
+	g.drawString(runVsWalkStr, x+100, y-10, true /*clear background*/);
 
-
+	let WALK_END_BUZZ_SECONDS = 10;
+	let areWeNearTheEndOfWalkCycle = timeElapsedInSecondsModCycle >= WALK_SECONDS - WALK_END_BUZZ_SECONDS && timeElapsedInSecondsModCycle < WALK_SECONDS; 
+	if(areWeNearTheEndOfWalkCycle) {
+		buzz();
+	} else {
+		let RUN_END_BUZZ_SECONDS = 10;
+		let areWeNearTheEndOfRunCycle = timeElapsedInSecondsModCycle >= walkPlusRunCycleTimeInSeconds - RUN_END_BUZZ_SECONDS; 
+	}
 
 }
 
-function drawAll() {
-	drawTimeOfDay();
-	drawTimeElapsed();
-	drawWalkRunCycleTime();
+function buzz() {
+	let numBuzzes = 2;
+	let intervalId;
+	function buzzOnce() {
+		if(numBuzzes <= 0) {
+			clearInterval(intervalId);
+		} else {
+			numBuzzes--;
+			Bangle.buzz(300, 1);
+		}
+	}
+	intervalId = setInterval(buzzOnce, 500);
+}
+
+function refreshAll() {
+	refreshTimeOfDay();
+	refreshTimeElapsed();
+	refreshWalkRunCycleTime();
 }
 
 g.clear();
-drawAll();
-var secondInterval = setInterval(drawAll, 1000);
+refreshAll();
+setInterval(refreshAll, 1000);
 
-//Bangle.loadWidgets();
-//Bangle.drawWidgets();
