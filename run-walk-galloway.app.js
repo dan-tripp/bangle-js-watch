@@ -67,15 +67,23 @@ function drawSegmentTimeAndStrImpl(segments_, curTime_) {
 
 	g.reset();
 
-	let x = 9;
+	let x = 5;
 	let y = 162;
 	g.setFontAlign(-1,1); // align bottom left
 	g.setFont("Vector", FONT_SIZE_MAIN);
 	g.drawString(countDownMinutesAndSecondsStr, x, y, true /*clear background*/);
 
-	g.setFontAlign(-1,1);
-	g.setFont("Vector", FONT_SIZE_MAIN/2);
-	g.drawString(curSegment.str, x+100, y-10, true /*clear background*/);
+	g.setFontAlign(-1, 0); // align center left 
+	x = 103;
+	y = 141;
+	let str = curSegment.str;
+	if(str.length == 5) {
+		str = str.slice(0, 3) + '\n ' + str.slice(3); // eg. "TEMPO" becomes "TEM\n PO" (i.e. "center-justified" the second line, for appearances). 
+	} else if(str.length > 5) {
+		str = str.slice(0, 4) + '\n' + str.slice(4);
+	}
+	g.setFont("Vector", FONT_SIZE_MAIN*55/100);
+	g.drawString(str, x, y, true /*clear background*/);
 
 }
 
@@ -204,9 +212,12 @@ if(testingOnWatch) {
 
 	let segments = [].concat(
 		repeat([
+			{str: 'TEMPO', seconds: 6}, 
+			{str: 'TEMPO2', seconds: 6}, 
+			{str: 'JOG', seconds: 6}, 
+			{str: 'RUN', seconds: 6}, 
 			{str: 'FAST', seconds: 6}, 
-			//{str: 'JOG', seconds: 6}, 
-			//{str: 'WALK', seconds: 6}, 
+			{str: 'WALK', seconds: 6}, 
 		], 1), 
 
 		repeat([
