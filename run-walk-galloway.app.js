@@ -155,6 +155,33 @@ function repeat(array_, numTimes_) {
   return r;
 }
 
+function startWeek8Run3() {
+	let segments = [].concat(
+		repeat([
+			{str: 'WALK', seconds: 30}, 
+			{str: 'RUN', seconds: 4*60 + 30}, 
+		], 2), 
+
+		repeat([
+			{str: 'TEMPO', seconds: 5.5*60}, 
+			{str: 'WALK', seconds: 45}, 
+			{str: 'TEMPO', seconds: 5.5*60}, 
+			{str: 'WALK', seconds: 45}, 
+			{str: 'JOG', seconds: 2*60}, 
+		], 2), 
+
+		repeat([
+			{str: 'WALK', seconds: 30}, 
+			{str: 'RUN', seconds: 4*60 + 30}, 
+		], 2), 
+
+		repeat([
+			{str: 'OVER', seconds: 9*60 + 59}
+		], 99)
+	);
+	startForSegments(segments);
+}
+
 function startWeek8Run2() {
 	let segments = [].concat(
 		repeat([
@@ -231,6 +258,11 @@ if(testingOnWatch) {
 		"0:30/4:30" : () => {
 			E.showPrompt("Starting 0:30/4:30", {buttons : {"Ok": true}}).then(function() {
 				start_30_430();
+			});
+		}, 
+		"Week 8 Run 3" : () => {
+			E.showPrompt("Starting Week 8 Run 3", {buttons : {"Ok": true}}).then(function() {
+				startWeek8Run3();
 			});
 		}, 
 		"Week 8 Run 2" : () => {
