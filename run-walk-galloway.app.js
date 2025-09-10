@@ -25,9 +25,9 @@ let RUN_NAME_TO_SEGMENTS = {
 		], 2), 
 
 		repeat([
+			{str: 'WALK', seconds: 40}, 
 			{str: 'TEMPO', seconds: 4*60}, 
 			{str: 'JOG', seconds: 2*60 - 40}, 
-			{str: 'WALK', seconds: 40}, 
 		], 6), 
 
 		repeat([
