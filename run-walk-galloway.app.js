@@ -3,6 +3,68 @@ let FONT_SIZE_MAIN = 45;
 let DRAW_INTERVAL_MILLIS = 500;
 let END_SEGMENT_BUZZ_PHASE_1_SECONDS = 10, END_SEGMENT_BUZZ_PHASE_2_SECONDS = 2;
 
+function repeat(array_, numTimes_) {
+  let r = [];
+  for (let i = 0; i < numTimes_; i++) {
+    for (let j = 0; j < array_.length; j++) {
+      r.push(array_[j]);
+    }
+  }
+  return r;
+}
+
+let RUN_NAME_TO_SEGMENTS = {
+	"0:30/4:30": [{str: 'WALK', seconds: 30}, {str: 'RUN', seconds: 4*60 + 30}], // ==> walk/run == 0.1111 
+
+	// eg. run this in python interpreter: plan_minutes_run = 6; seconds_walk = 40; ratio = (seconds_walk/60)/(plan_minutes_run - seconds_walk/60); print(ratio) # target ratio 0.1111 
+
+	"Week 9 Run 2": [].concat(
+		repeat([
+			{str: 'WALK', seconds: 30}, 
+			{str: 'RUN', seconds: 4*60 + 30}, 
+		], 2), 
+
+		repeat([
+			{str: 'TEMPO', seconds: 4*60}, 
+			{str: 'JOG', seconds: 2*60 - 40}, 
+			{str: 'WALK', seconds: 40}, 
+		], 6), 
+
+		repeat([
+			{str: 'WALK', seconds: 30}, 
+			{str: 'RUN', seconds: 4*60 + 30}, 
+		], 2), 
+
+		repeat([
+			{str: 'OVER', seconds: 9*60 + 59}
+		], 99)
+	), 
+
+	"Week 8 Run 3": [].concat(
+		repeat([
+			{str: 'WALK', seconds: 30}, 
+			{str: 'RUN', seconds: 4*60 + 30}, 
+		], 2), 
+
+		repeat([
+			{str: 'TEMPO', seconds: 5.5*60}, 
+			{str: 'WALK', seconds: 45}, 
+			{str: 'TEMPO', seconds: 5.5*60}, 
+			{str: 'WALK', seconds: 45}, 
+			{str: 'JOG', seconds: 2*60}, 
+		], 2), 
+
+		repeat([
+			{str: 'WALK', seconds: 30}, 
+			{str: 'RUN', seconds: 4*60 + 30}, 
+		], 2), 
+
+		repeat([
+			{str: 'OVER', seconds: 9*60 + 59}
+		], 99)
+	), 
+};
+
 function drawTimeOfDay() {
 	// X/Y are the position of the bottom right of the HH:MM text 
 	const x = g.getWidth()/2 + 70;
@@ -140,74 +202,12 @@ function drawAll(segments_) {
 	drawSegmentTimeAndStr(segments_);
 }
 
-function start_30_430() {
-	let segments = [{str: 'WALK', seconds: 30}, {str: 'RUN', seconds: 4*60 + 30}];
-	startForSegments(segments);
+function startRunByName(runName_) {
+	let segments = RUN_NAME_TO_SEGMENTS[runName_];
+	startRunBySegments(segments);
 }
 
-function repeat(array_, numTimes_) {
-  let r = [];
-  for (let i = 0; i < numTimes_; i++) {
-    for (let j = 0; j < array_.length; j++) {
-      r.push(array_[j]);
-    }
-  }
-  return r;
-}
-
-function startWeek8Run3() {
-	let segments = [].concat(
-		repeat([
-			{str: 'WALK', seconds: 30}, 
-			{str: 'RUN', seconds: 4*60 + 30}, 
-		], 2), 
-
-		repeat([
-			{str: 'TEMPO', seconds: 5.5*60}, 
-			{str: 'WALK', seconds: 45}, 
-			{str: 'TEMPO', seconds: 5.5*60}, 
-			{str: 'WALK', seconds: 45}, 
-			{str: 'JOG', seconds: 2*60}, 
-		], 2), 
-
-		repeat([
-			{str: 'WALK', seconds: 30}, 
-			{str: 'RUN', seconds: 4*60 + 30}, 
-		], 2), 
-
-		repeat([
-			{str: 'OVER', seconds: 9*60 + 59}
-		], 99)
-	);
-	startForSegments(segments);
-}
-
-function startWeek8Run2() {
-	let segments = [].concat(
-		repeat([
-			{str: 'WALK', seconds: 30}, 
-			{str: 'RUN', seconds: 4*60 + 30}, 
-		], 2), 
-
-		repeat([
-			{str: 'FAST', seconds: 90}, 
-			{str: 'JOG', seconds: 70}, 
-			{str: 'WALK', seconds: 20}, 
-		], 10), 
-
-		repeat([
-			{str: 'WALK', seconds: 30}, 
-			{str: 'RUN', seconds: 4*60 + 30}, 
-		], 2), 
-
-		repeat([
-			{str: 'OVER', seconds: 9*60 + 59}
-		], 99)
-	);
-	startForSegments(segments);
-}
-
-function startForSegments(segments_) {
+function startRunBySegments(segments_) {
 	g_t0 = getTime();
 	drawAll(segments_);
 	setInterval(() => {drawAll(segments_);}, DRAW_INTERVAL_MILLIS);
@@ -252,24 +252,18 @@ if(testingOnWatch) {
 		], 99)
 	);
 
-	startForSegments(segments);
+	startRunBySegments(segments);
 } else {
-	E.showMenu({
-		"0:30/4:30" : () => {
-			E.showPrompt("Starting 0:30/4:30", {buttons : {"Ok": true}}).then(function() {
-				start_30_430();
+	let menuStrToFunc = {};
+	let runNames = Object.keys(RUN_NAME_TO_SEGMENTS);
+	for(let i = 0; i < runNames.length; i++) {
+		let runName = runNames[i];
+		menuStrToFunc[runName] = () => {
+			E.showPrompt(`Starting ${runName}`, {buttons : {"Ok": true}}).then(function() {
+				startRunByName(runName);
 			});
-		}, 
-		"Week 8 Run 3" : () => {
-			E.showPrompt("Starting Week 8 Run 3", {buttons : {"Ok": true}}).then(function() {
-				startWeek8Run3();
-			});
-		}, 
-		"Week 8 Run 2" : () => {
-			E.showPrompt("Starting Week 8 Run 2", {buttons : {"Ok": true}}).then(function() {
-				startWeek8Run2();
-			});
-		}, 
-	});
+		};
+	}
+	E.showMenu(menuStrToFunc);
 }
 
