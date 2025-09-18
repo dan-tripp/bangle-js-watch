@@ -18,6 +18,28 @@ let RUN_NAME_TO_SEGMENTS = {
 
 	// eg. run this in python interpreter: plan_minutes_run = 6; seconds_walk = 40; ratio = (seconds_walk/60)/(plan_minutes_run - seconds_walk/60); print(ratio) # target ratio 0.1111 
 
+	"Week 10 Run 2": [].concat(
+		repeat([
+			{str: 'WALK', seconds: 30}, 
+			{str: 'RUN', seconds: 4*60 + 30}, 
+		], 2), 
+
+		repeat([
+			{str: 'WALK', seconds: 30}, 
+			{str: 'TEMPO', seconds: 3*60}, 
+			{str: 'JOG', seconds: 2*60 - 30}, 
+		], 5), 
+
+		repeat([
+			{str: 'WALK', seconds: 30}, 
+			{str: 'RUN', seconds: 4*60 + 30}, 
+		], 2), 
+
+		repeat([
+			{str: 'OVER', seconds: 9*60 + 59}
+		], 99)
+	), 
+
 	"Week 9 Run 2": [].concat(
 		repeat([
 			{str: 'WALK', seconds: 30}, 
