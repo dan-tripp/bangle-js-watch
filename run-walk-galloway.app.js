@@ -13,79 +13,78 @@ function repeat(array_, numTimes_) {
   return r;
 }
 
-let RUN_NAME_TO_SEGMENTS = {
-	"0:30/4:30": [{str: 'WALK', seconds: 30}, {str: 'RUN', seconds: 4*60 + 30}], // ==> walk/run == 0.1111 
+let RUN_NAME_TO_SEGMENTS = {};
 
-	// eg. run this in python interpreter: plan_minutes_run = 6; seconds_walk = 40; ratio = (seconds_walk/60)/(plan_minutes_run - seconds_walk/60); print(ratio) # target ratio 0.1111 
+RUN_NAME_TO_SEGMENTS["scratch"] = [{str: 'MARAPACE', seconds: 45}];
 
-	"Week 10 Run 2": [].concat(
+RUN_NAME_TO_SEGMENTS["0:30/4:30"] = [{str: 'WALK', seconds: 30}, {str: 'RUN', seconds: 4*60 + 30}];
+
+{
+	let walkSeconds = 45;
+	RUN_NAME_TO_SEGMENTS["Week 13 Run 2"] = [].concat(
 		repeat([
 			{str: 'WALK', seconds: 30}, 
-			{str: 'RUN', seconds: 4*60 + 30}, 
+			{str: 'EASY', seconds: 4*60 + 30}, 
 		], 2), 
 
 		repeat([
-			{str: 'WALK', seconds: 30}, 
-			{str: 'TEMPO', seconds: 3*60}, 
-			{str: 'JOG', seconds: 2*60 - 30}, 
+			{str: 'WALK', seconds: walkSeconds}, 
+			{str: 'TEMPO', seconds: 5*60}, 
+			{str: 'JOG', seconds: 2*60 - walkSeconds}, 
 		], 5), 
-
+		
 		repeat([
 			{str: 'WALK', seconds: 30}, 
-			{str: 'RUN', seconds: 4*60 + 30}, 
+			{str: 'EASY', seconds: 4*60 + 30}, 
 		], 2), 
 
 		repeat([
 			{str: 'OVER', seconds: 9*60 + 59}
 		], 99)
-	), 
-
-	"Week 9 Run 2": [].concat(
-		repeat([
-			{str: 'WALK', seconds: 30}, 
-			{str: 'RUN', seconds: 4*60 + 30}, 
-		], 2), 
-
-		repeat([
-			{str: 'WALK', seconds: 40}, 
-			{str: 'TEMPO', seconds: 4*60}, 
-			{str: 'JOG', seconds: 2*60 - 40}, 
-		], 6), 
-
-		repeat([
-			{str: 'WALK', seconds: 30}, 
-			{str: 'RUN', seconds: 4*60 + 30}, 
-		], 2), 
-
-		repeat([
-			{str: 'OVER', seconds: 9*60 + 59}
-		], 99)
-	), 
-
-	"Week 8 Run 3": [].concat(
-		repeat([
-			{str: 'WALK', seconds: 30}, 
-			{str: 'RUN', seconds: 4*60 + 30}, 
-		], 2), 
-
-		repeat([
-			{str: 'TEMPO', seconds: 5.5*60}, 
-			{str: 'WALK', seconds: 45}, 
-			{str: 'TEMPO', seconds: 5.5*60}, 
-			{str: 'WALK', seconds: 45}, 
-			{str: 'JOG', seconds: 2*60}, 
-		], 2), 
-
-		repeat([
-			{str: 'WALK', seconds: 30}, 
-			{str: 'RUN', seconds: 4*60 + 30}, 
-		], 2), 
-
-		repeat([
-			{str: 'OVER', seconds: 9*60 + 59}
-		], 99)
-	), 
+	);
 };
+
+RUN_NAME_TO_SEGMENTS["Week 12 Run 2"] = [].concat(
+	repeat([
+		{str: 'WALK', seconds: 30}, 
+		{str: 'EASY', seconds: 4*60 + 30}, 
+	], 1), 
+
+	repeat([
+		{str: 'WALK', seconds: 30}, 
+		{str: 'MARAPACE', seconds: 4*60 + 30}, 
+	], 8), 
+
+	repeat([
+		{str: 'WALK', seconds: 30}, 
+		{str: 'EASY', seconds: 4*60 + 30}, 
+	], 1), 
+
+	repeat([
+		{str: 'OVER', seconds: 9*60 + 59}
+	], 99)
+);
+
+RUN_NAME_TO_SEGMENTS["Week 11 Run 3"] = [].concat(
+	repeat([
+		{str: 'WALK', seconds: 30}, 
+		{str: 'EASY', seconds: 4*60 + 30}, 
+	], 2), 
+
+	repeat([
+		{str: 'WALK', seconds: 30}, 
+		{str: 'MARAPACE', seconds: 4*60 + 30}, 
+	], 6), 
+
+	repeat([
+		{str: 'WALK', seconds: 30}, 
+		{str: 'EASY', seconds: 4*60 + 30}, 
+	], 2), 
+
+	repeat([
+		{str: 'OVER', seconds: 9*60 + 59}
+	], 99)
+);
 
 function drawTimeOfDay() {
 	// X/Y are the position of the bottom right of the HH:MM text 
@@ -139,15 +138,19 @@ function getCurSegmentInfo(segments_, curTime_) {
 	return {curSegmentIdx, secondsIntoCurSegment};
 }
 
+function getMinutesColonSecondsStrFromSeconds(seconds_) {
+	let countDownMinutesToDisplay = Math.floor(seconds_ / 60);
+	let countDownSecondsToDisplay = seconds_ - countDownMinutesToDisplay*60;
+	let r = `${countDownMinutesToDisplay.toString()}:${countDownSecondsToDisplay.toString().padStart(2, "0")}`;
+	return r;
+}
+
 function drawSegmentTimeAndStrImpl(segments_, curTime_) {
 	let _ = getCurSegmentInfo(segments_, curTime_), curSegmentIdx = _.curSegmentIdx, secondsIntoCurSegment = _.secondsIntoCurSegment;
 	let curSegment = segments_[curSegmentIdx % segments_.length];
 	let secondsRemainingInCurSegment = curSegment.seconds - secondsIntoCurSegment;
 
-	let countDownMinutesToDisplay = Math.floor(secondsRemainingInCurSegment / 60);
-	let countDownSecondsToDisplay = secondsRemainingInCurSegment - countDownMinutesToDisplay*60;
-
-	let countDownMinutesAndSecondsStr = `${countDownMinutesToDisplay.toString()}:${countDownSecondsToDisplay.toString().padStart(2, "0")}`;
+	let countDownMinutesAndSecondsStr = getMinutesColonSecondsStrFromSeconds(secondsRemainingInCurSegment);
 
 	g.reset();
 
@@ -236,21 +239,60 @@ function startRunBySegments(segments_) {
 	scheduleEndSegmentBuzzers(segments_, 0);
 }
 
+function getWalkPercentageFromSegments(segments_) {
+	let walkSecondsTally = 0, runSecondsTally = 0;
+	for(let segment of segments_) {
+		if(segment.str === 'OVER') {
+			break;
+		} else if(segment.str === 'WALK') {
+			walkSecondsTally += segment.seconds;
+		} else {
+			runSecondsTally += segment.seconds;
+		}
+	}
+	let r = (100*walkSecondsTally/(walkSecondsTally+runSecondsTally)).toFixed(1);
+	return r;
+}
+
+function getTotalMinutesFromSegments(segments_) {
+	let secondsTally = 0;
+	for(let segment of segments_) {
+		if(segment.str === 'OVER') {
+			break;
+		} else {
+			secondsTally += segment.seconds;
+		}
+	}
+	let minutesTally = secondsTally/60;
+	return minutesTally;
+}
+
 let g_t0;
 
 let isRunningUnderNode = typeof process !== "undefined"  && process.versions != null && process.versions.node != null;
-let testingOnWindows = isRunningUnderNode;
 
-if(testingOnWindows) {
+if(isRunningUnderNode) {
 
-	g_t0 = 1756722879.741;
-	for(let curTimeRelative = 1; curTimeRelative < 240*60; curTimeRelative += 1) {
-		let segments = [{str: 'WALK', seconds: 30}, {str: 'RUN', seconds: 4*60 + 30}];
-		let {curSegmentIdx, secondsIntoCurSegment} = getCurSegmentInfo(segments, g_t0 + curTimeRelative);
-		let minutesIntoCurSegment = secondsIntoCurSegment/60;
-		console.log(new Date(), "", JSON.stringify({curTime: curTimeRelative, curSegmentIdx, minutesIntoCurSegment}, null, 0));
+	if(process.argv[2] === '--scratch') { // i.e. run this: node run-walk-galloway.app.js --scratch 
+
+
+	} else if(process.argv.length == 2) { // ==> no args ==> print info about programmed runs 
+		let runNames = Object.keys(RUN_NAME_TO_SEGMENTS);
+		for(let i = runNames.length-1; i >= 0 ; i--) {
+			let runName = runNames[i];
+			let segments = RUN_NAME_TO_SEGMENTS[runName];
+			let walkPercentage = getWalkPercentageFromSegments(segments);
+			let totalMinutes = getTotalMinutesFromSegments(segments);
+			console.log(`${runName}:`);
+			for(let segment of segments) {
+				if(segment.str === 'OVER') break;
+				console.log(`\t${segment.str} ${getMinutesColonSecondsStrFromSeconds(segment.seconds)}`);
+			}
+			console.log(`\t${JSON.stringify({walkPercentage, totalMinutes}, null, 0)}`);
+		}
+	} else {
+		throw new Error('unknown args');
 	}
-
 	process.exit();
 }
 
