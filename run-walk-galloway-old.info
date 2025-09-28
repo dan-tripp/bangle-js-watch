@@ -1,6 +1,0 @@
-{
-	"id":"run-walk-galloway",
-	"name":"Run/Walk Old",
-	"src":"run-walk-galloway-old.app.js",
-	"sortorder": -9
-}
