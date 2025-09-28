@@ -15,7 +15,7 @@ function repeat(array_, numTimes_) {
 
 let RUN_NAME_TO_SEGMENTS = {};
 
-RUN_NAME_TO_SEGMENTS["scratch"] = [{str: 'MARAPACE', seconds: 45}];
+RUN_NAME_TO_SEGMENTS["scratch"] = [{str: 'MARAPACE', seconds: 12}];
 
 RUN_NAME_TO_SEGMENTS["0:30/4:30"] = [{str: 'WALK', seconds: 30}, {str: 'RUN', seconds: 4*60 + 30}];
 
@@ -202,6 +202,7 @@ function scheduleEndSegmentPhase2Buzzer(segmentEndTimeInEpochSeconds_) {
 	let buzzPhase2StartTimeInSecondsFromCurTime = buzzPhase2StartTimeInEpochSeconds - getTime();
 	function doBuzzForPhase2() {
 		Bangle.buzz(END_SEGMENT_BUZZ_PHASE_2_SECONDS*1000, 10);
+		Bangle.setBacklight(true); /* this will stay on according to the backlight timeout setting, which (at the time of writing) is longer than END_SEGMENT_BUZZ_PHASE_2_SECONDS. */
 	}
 	setTimeout(doBuzzForPhase2, buzzPhase2StartTimeInSecondsFromCurTime*1000);
 }
@@ -233,6 +234,7 @@ function startRunByName(runName_) {
 }
 
 function startRunBySegments(segments_) {
+	Bangle.setOptions({backlightTimeout: 6*1000}); /* this is the timeout for while we're running.  the usefulness of the light at the end of the phase 2 buzzer depends on this timeout. */
 	g_t0 = getTime();
 	drawAll(segments_);
 	setInterval(() => {drawAll(segments_);}, DRAW_INTERVAL_MILLIS);
@@ -295,6 +297,8 @@ if(isRunningUnderNode) {
 	}
 	process.exit();
 }
+
+Bangle.setOptions({backlightTimeout: 10*1000}); /* this is the timeout for while we're in our menu. */
 
 let testingOnWatch = false;
 if(testingOnWatch) {
