@@ -15,9 +15,13 @@ function repeat(array_, numTimes_) {
 
 let RUN_NAME_TO_SEGMENTS = {};
 
-RUN_NAME_TO_SEGMENTS["scratch"] = [{str: 'MARAPACE', seconds: 12}];
+//RUN_NAME_TO_SEGMENTS["scratch"] = [{str: 'MARAPACE', seconds: 12}];
 
 RUN_NAME_TO_SEGMENTS["0:30/4:30"] = [{str: 'WALK', seconds: 30}, {str: 'RUN', seconds: 4*60 + 30}];
+
+RUN_NAME_TO_SEGMENTS["0:22/3:22"] = [{str: 'WALK', seconds: 22}, {str: 'RUN', seconds: 3*60 + 22}];
+
+RUN_NAME_TO_SEGMENTS["0:15/2:15"] = [{str: 'WALK', seconds: 15}, {str: 'RUN', seconds: 2*60 + 15}];
 
 {
 	let walkSeconds = 45;
