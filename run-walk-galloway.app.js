@@ -298,29 +298,43 @@ if(isRunningUnderNode) {
 	process.exit();
 }
 
+function writeToFile(destFilename_, string_) {
+	require("Storage").write(destFilename_, string_);
+}
+
+function printEnvironmentInfo() {
+
+	let logLines = [];
+
+	let o = process.env;
+	Object.keys(o).forEach(k => logLines.push(k + "=", JSON.stringify(o[k])));
+	logLines.push("---");
+
+	let o2 = Bangle.getOptions();
+	Object.keys(o2).forEach(k => logLines.push(k + "=", JSON.stringify(o2[k])));	
+	logLines.push("---");
+
+	let s = require("Storage").readJSON("setting.json", 1) || {};
+	Object.keys(s).forEach(k => logLines.push(k + "=", JSON.stringify(s[k])));
+	logLines.push("---");
+
+	for(let logLine of logLines) {
+		print(logLine);
+	}
+
+	let logLinesConcat = logLines.join("\n");
+
+	writeToFile("run-walk-log.txt", logLinesConcat);
+
+}
+
 Bangle.setOptions({backlightTimeout: 10*1000}); /* this is the timeout for while we're in our menu. */
 
 let testingOnWatch = false;
 if(testingOnWatch) {
-	END_SEGMENT_BUZZ_PHASE_1_SECONDS = 4;
-	END_SEGMENT_BUZZ_PHASE_2_SECONDS = 2;
 
-	let segments = [].concat(
-		repeat([
-			{str: 'TEMPO', seconds: 6}, 
-			{str: 'TEMPO2', seconds: 6}, 
-			{str: 'JOG', seconds: 6}, 
-			{str: 'RUN', seconds: 6}, 
-			{str: 'FAST', seconds: 6}, 
-			{str: 'WALK', seconds: 6}, 
-		], 1), 
 
-		repeat([
-			{str: 'OVER', seconds: 9*60 + 59}
-		], 99)
-	);
-
-	startRunBySegments(segments);
+	
 } else {
 	let menuStrToFunc = {};
 	let runNames = Object.keys(RUN_NAME_TO_SEGMENTS);

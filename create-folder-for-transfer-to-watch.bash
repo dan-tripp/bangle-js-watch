@@ -39,14 +39,19 @@ if [[ -d "$dest_dir" ]] ; then
 fi
 mkdir "$dest_dir"
 sortOrderIdx=-1000
-cat git-tags-to-transfer-to-watch | while read git_tag ; do 
-	js_for_this_version_file_path="$dest_dir"/run-walk-galloway-"$git_tag".app.js
-	git show "$git_tag":./run-walk-galloway.app.js > "$js_for_this_version_file_path"
-	info_file_path="$dest_dir"/run-walk-galloway-"$git_tag".info
+(echo dev ; cat git-tags-to-transfer-to-watch) | while read version ; do 
+	js_for_this_version_file_path="$dest_dir"/run-walk-galloway-"$version".app.js
+	if [[ "$version" == "dev" ]] ; then 
+		cp ./run-walk-galloway.app.js "$js_for_this_version_file_path"
+	else
+		git_tag="$version"
+		git show "$git_tag":./run-walk-galloway.app.js > "$js_for_this_version_file_path"
+	fi
+	info_file_path="$dest_dir"/run-walk-galloway-"$version".info
 	cat << EOF > "$info_file_path"
 {
         "id":"run-walk-galloway",
-        "name":"Run/Walk $git_tag",
+        "name":"Run/Walk $version",
         "src":"$(basename $js_for_this_version_file_path)",
         "sortorder": $sortOrderIdx
 }
