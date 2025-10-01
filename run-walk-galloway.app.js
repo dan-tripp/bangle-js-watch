@@ -302,6 +302,7 @@ function writeToFile(destFilename_, string_) {
 	require("Storage").write(destFilename_, string_);
 }
 
+/* On 2025-10-01 I found one different in the output of this function depending on whether this program is running in "play mode" vs. "install mode": in play mode, stepCounterThresholdHigh=0.  in installed mode, stepCounterThresholdHigh=1073747204.  I don't get it. */
 function printEnvironmentInfo() {
 
 	let logLines = [];
