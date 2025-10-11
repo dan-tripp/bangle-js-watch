@@ -24,6 +24,17 @@ RUN_NAME_TO_SEGMENTS["0:22/3:22"] = [{str: 'WALK', seconds: 22}, {str: 'RUN', se
 RUN_NAME_TO_SEGMENTS["0:15/2:15"] = [{str: 'WALK', seconds: 15}, {str: 'RUN', seconds: 2*60 + 15}];
 
 {
+	RUN_NAME_TO_SEGMENTS["Week 13 Run 3"] = [].concat(
+		repeat([{str: 'WALK', seconds: 30}, {str: 'EASY',     seconds: 4*60 + 30}, ], 1), 
+		repeat([{str: 'WALK', seconds: 30}, {str: 'MARAPACE', seconds: 4*60 + 30}, ], 7), 
+		repeat([{str: 'WALK', seconds: 30}, {str: 'EASY',     seconds: 4*60 + 30}, ], 1), 
+		repeat([{str: 'WALK', seconds: 30}, {str: 'TEMPO',    seconds: 4*60 + 30}, ], 1), 
+		repeat([{str: 'WALK', seconds: 30}, {str: 'EASY',     seconds: 4*60 + 30}, ], 2),
+		repeat([{str: 'OVER', seconds: 9*60 + 59}], 99)
+	);
+};
+
+{
 	let walkSeconds = 45;
 	RUN_NAME_TO_SEGMENTS["Week 13 Run 2"] = [].concat(
 		repeat([
