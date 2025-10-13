@@ -198,7 +198,8 @@ function scheduleEndSegmentPhase1Buzzer(segmentEndTimeInEpochSeconds_) {
 			Bangle.buzz(300, 10);
 		}
 		buzzOnce();
-		let buzzPeriodInSeconds = 0.5, numBuzzesRemaining = Math.floor(buzzPhase1DurationInSeconds/buzzPeriodInSeconds);
+		let buzzPeriodInSeconds = 0.5, numBuzzesRemaining = Math.floor(buzzPhase1DurationInSeconds/buzzPeriodInSeconds); 
+		numBuzzesRemaining--; // so we don't overlap w/ the first phase 2 buzz. 
 		let intervalId;
 		function buzzIntervalFunc() {
 			buzzOnce();
@@ -215,11 +216,24 @@ function scheduleEndSegmentPhase1Buzzer(segmentEndTimeInEpochSeconds_) {
 function scheduleEndSegmentPhase2Buzzer(segmentEndTimeInEpochSeconds_) {
 	let buzzPhase2StartTimeInEpochSeconds = segmentEndTimeInEpochSeconds_ - END_SEGMENT_BUZZ_PHASE_2_SECONDS;
 	let buzzPhase2StartTimeInSecondsFromCurTime = buzzPhase2StartTimeInEpochSeconds - getTime();
-	function doBuzzForPhase2() {
-		Bangle.buzz(END_SEGMENT_BUZZ_PHASE_2_SECONDS*1000, 10);
-		Bangle.setBacklight(true); /* this will stay on according to the backlight timeout setting, which (at the time of writing) is longer than END_SEGMENT_BUZZ_PHASE_2_SECONDS. */
+	function doBuzzesForPhase2() {
+		function buzzOnce() {
+			Bangle.buzz(700, 10);
+		}
+		buzzOnce();
+		Bangle.setBacklight(true); /* doing this will make the light stay on for a length of time determined by the backlight timeout setting, which (at the time of writing) is longer than END_SEGMENT_BUZZ_PHASE_2_SECONDS. */
+		let buzzPeriodInSeconds = 1.0, numBuzzesRemaining = Math.floor(END_SEGMENT_BUZZ_PHASE_2_SECONDS/buzzPeriodInSeconds);
+		let intervalId;
+		function buzzIntervalFunc() {
+			buzzOnce();
+			numBuzzesRemaining--;
+			if(numBuzzesRemaining == 0) {
+				clearInterval(intervalId);
+			}
+		}
+		intervalId = setInterval(buzzIntervalFunc, buzzPeriodInSeconds*1000);
 	}
-	setTimeout(doBuzzForPhase2, buzzPhase2StartTimeInSecondsFromCurTime*1000);
+	setTimeout(doBuzzesForPhase2, buzzPhase2StartTimeInSecondsFromCurTime*1000);
 }
 
 /* @param iSegment_ can be bigger than segments_.length.  we'll mod it if necessary. */
@@ -344,13 +358,34 @@ function printEnvironmentInfo() {
 
 }
 
+function testBuzzLengths() {
+	let buzzPeriodInSeconds = 1
+	let numBuzzesPerLength = 2;
+	let numBuzzLengths = 2;
+	let iBuzz = 0;
+	function buzzIntervalFunc() {
+		let buzzLength = 0;
+		if(iBuzz < numBuzzesPerLength*1) {
+			buzzLength = 600;
+		} else if(iBuzz < numBuzzesPerLength*2) {
+			buzzLength = 700;
+		} else {
+			throw new Error()
+		}
+		console.log(new Date(), JSON.stringify({buzzLength}, null, 0));
+		Bangle.buzz(buzzLength, 10);
+		iBuzz = (iBuzz+1) % (numBuzzesPerLength*numBuzzLengths);
+	}
+	setInterval(buzzIntervalFunc, buzzPeriodInSeconds*1000);
+}
+
 Bangle.setOptions({backlightTimeout: 10*1000}); /* this is the timeout for while we're in our menu. */
 
 let testingOnWatch = false;
 if(testingOnWatch) {
 
+	testBuzzLengths();
 
-	
 } else {
 	let menuStrToFunc = {};
 	let runNames = Object.keys(RUN_NAME_TO_SEGMENTS);
