@@ -15,13 +15,24 @@ function repeat(array_, numTimes_) {
 
 let RUN_NAME_TO_SEGMENTS = {};
 
-//RUN_NAME_TO_SEGMENTS["scratch"] = [{str: 'MARAPACE', seconds: 12}];
+RUN_NAME_TO_SEGMENTS["scratch"] = [{str: 'FASTER', seconds: 12}];
 
 RUN_NAME_TO_SEGMENTS["0:30/4:30"] = [{str: 'WALK', seconds: 30}, {str: 'RUN', seconds: 4*60 + 30}];
 
 RUN_NAME_TO_SEGMENTS["0:22/3:22"] = [{str: 'WALK', seconds: 22}, {str: 'RUN', seconds: 3*60 + 22}];
 
 RUN_NAME_TO_SEGMENTS["0:15/2:15"] = [{str: 'WALK', seconds: 15}, {str: 'RUN', seconds: 2*60 + 15}];
+
+{
+	RUN_NAME_TO_SEGMENTS["Week 14 Run 3"] = [].concat(
+		repeat([{str: 'WALK', seconds: 30}, {str: 'EASY',     seconds: 4*60 + 30}, ], 2), 
+		repeat([{str: 'WALK', seconds: 30}, {str: 'STEADY',   seconds: 4*60 + 30}, ], 2), 
+		repeat([{str: 'WALK', seconds: 30}, {str: 'MARAPACE', seconds: 4*60 + 30}, ], 2), 
+		repeat([{str: 'WALK', seconds: 30}, {str: 'FASTER',   seconds: 4*60 + 30}, ], 2), 
+		repeat([{str: 'WALK', seconds: 30}, {str: 'EASY',     seconds: 4*60 + 30}, ], 2), 
+		repeat([{str: 'OVER', seconds: 9*60 + 59}], 99)
+	);
+};
 
 {
 	RUN_NAME_TO_SEGMENTS["Week 13 Run 3"] = [].concat(
@@ -195,6 +206,7 @@ function scheduleEndSegmentPhase1Buzzer(segmentEndTimeInEpochSeconds_) {
 	let buzzPhase1StartTimeInSecondsFromCurTime = buzzPhase1StartTimeInEpochSeconds - getTime();
 	function doBuzzesForPhase1() {
 		function buzzOnce() {
+			//console.log(new Date(), "phase 1 buzz", JSON.stringify({"tMinus": segmentEndTimeInEpochSeconds_ - getTime()}, null, 0));
 			Bangle.buzz(300, 10);
 		}
 		buzzOnce();
@@ -204,7 +216,7 @@ function scheduleEndSegmentPhase1Buzzer(segmentEndTimeInEpochSeconds_) {
 		function buzzIntervalFunc() {
 			buzzOnce();
 			numBuzzesRemaining--;
-			if(numBuzzesRemaining == 0) {
+			if(numBuzzesRemaining <= 0) {
 				clearInterval(intervalId);
 			}
 		}
@@ -218,20 +230,27 @@ function scheduleEndSegmentPhase2Buzzer(segmentEndTimeInEpochSeconds_) {
 	let buzzPhase2StartTimeInSecondsFromCurTime = buzzPhase2StartTimeInEpochSeconds - getTime();
 	function doBuzzesForPhase2() {
 		function buzzOnce() {
-			Bangle.buzz(700, 10);
+			//console.log(new Date(), "phase 2 buzz", JSON.stringify({"tMinus": segmentEndTimeInEpochSeconds_ - getTime()}, null, 0));
+			Bangle.buzz(2000, 10);
 		}
 		buzzOnce();
 		Bangle.setBacklight(true); /* doing this will make the light stay on for a length of time determined by the backlight timeout setting, which (at the time of writing) is longer than END_SEGMENT_BUZZ_PHASE_2_SECONDS. */
-		let buzzPeriodInSeconds = 1.0, numBuzzesRemaining = Math.floor(END_SEGMENT_BUZZ_PHASE_2_SECONDS/buzzPeriodInSeconds);
-		let intervalId;
-		function buzzIntervalFunc() {
-			buzzOnce();
+		let buzzPeriodInSeconds = 2.0, numBuzzesRemaining = Math.floor(END_SEGMENT_BUZZ_PHASE_2_SECONDS/buzzPeriodInSeconds);
+		let startABuzzAtSegmentEndTime = false;
+		if(!startABuzzAtSegmentEndTime) {
 			numBuzzesRemaining--;
-			if(numBuzzesRemaining == 0) {
-				clearInterval(intervalId);
-			}
 		}
-		intervalId = setInterval(buzzIntervalFunc, buzzPeriodInSeconds*1000);
+		if(numBuzzesRemaining > 0) {
+			let intervalId;
+			function buzzIntervalFunc() {
+				numBuzzesRemaining--;
+				buzzOnce();
+				if(numBuzzesRemaining <= 0) {
+					clearInterval(intervalId);
+				}
+			}
+			intervalId = setInterval(buzzIntervalFunc, buzzPeriodInSeconds*1000);
+		}
 	}
 	setTimeout(doBuzzesForPhase2, buzzPhase2StartTimeInSecondsFromCurTime*1000);
 }
