@@ -1,7 +1,7 @@
 
 # Everyday coding 
 
-- some JS idioms aren't supported eg. "Destructing Assignment".
+- some JS idioms aren't supported eg. "Destructing Assignment" eg. `for (const [key, value] of Object.entries(object))` 
 	- source: https://www.espruino.com/Features 
 
 
