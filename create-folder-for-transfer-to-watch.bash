@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 set -uo pipefail
-IFS=$'\n\t'  # Inspired by http://redsymbol.net/articles/unofficial-bash-strict-mode/.  Meant as a safety net.  You should still quote variable expansions.
 function err_trap_func () {
 	exit_status="$?"
   echo "Exiting with status \"$exit_status\" due to command \"$BASH_COMMAND\" (call stack: line(s) $LINENO ${BASH_LINENO[*]} in $0)" >&2
@@ -39,7 +38,7 @@ if [[ -d "$dest_dir" ]] ; then
 fi
 mkdir "$dest_dir"
 sortOrderIdx=-1000
-(echo dev ; cat git-tags-to-transfer-to-watch) | while read version ; do 
+for version in $(echo dev $(cat git-tags-to-transfer-to-watch)) ; do 
 	js_for_this_version_file_path="$dest_dir"/run-walk-galloway-"$version".app.js
 	if [[ "$version" == "dev" ]] ; then 
 		cp ./run-walk-galloway.app.js "$js_for_this_version_file_path"
