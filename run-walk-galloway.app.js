@@ -15,74 +15,13 @@ function repeat(array_, numTimes_) {
 
 let RUN_NAME_TO_SEGMENTS = {};
 
-RUN_NAME_TO_SEGMENTS["scratch"] = [{str: 'FASTER', seconds: 12}];
+// RUN_NAME_TO_SEGMENTS["scratch"] = [{str: 'FASTER', seconds: 12}];
 
 RUN_NAME_TO_SEGMENTS["0:30/4:30"] = [{str: 'WALK', seconds: 30}, {str: 'RUN', seconds: 4*60 + 30}];
 
-RUN_NAME_TO_SEGMENTS["0:22/3:22"] = [{str: 'WALK', seconds: 22}, {str: 'RUN', seconds: 3*60 + 22}];
-
-RUN_NAME_TO_SEGMENTS["0:15/2:15"] = [{str: 'WALK', seconds: 15}, {str: 'RUN', seconds: 2*60 + 15}];
-
-{
-	let walk1 = 12, walk2 = 18, walk3 = 25;
-	RUN_NAME_TO_SEGMENTS["Week 15 Run 2"] = [].concat(
-		repeat([
-			{str: 'WALK', seconds: 30}, 
-			{str: 'EASY', seconds: 4*60 + 30}, 
-		], 2), 
-
-		repeat([
-			{str: 'WALK', seconds: walk1}, 
-			{str: 'FAST', seconds: 60}, 
-			{str: 'JOG', seconds: 60 - walk1}, 
-		], 5), 
-
-		repeat([
-			{str: 'WALK', seconds: walk2}, 
-			{str: 'JOG', seconds: 3*60 - walk2}, 
-		], 1), 
-
-		repeat([
-			{str: 'WALK', seconds: walk3}, 
-			{str: 'MARAPACE', seconds: 4*60 - walk3}, 
-		], 2), 
-
-		repeat([
-			{str: 'WALK', seconds: 30}, 
-			{str: 'EASY', seconds: 4*60 + 30}, 
-		], 2), 
-
-		repeat([
-			{str: 'OVER', seconds: 9*60 + 59}
-		], 99)
-	);
-};
-
-{
-	RUN_NAME_TO_SEGMENTS["Week 14 Run 3"] = [].concat(
-		repeat([{str: 'WALK', seconds: 30}, {str: 'EASY',     seconds: 4*60 + 30}, ], 2), 
-		repeat([{str: 'WALK', seconds: 30}, {str: 'STEADY',   seconds: 4*60 + 30}, ], 2), 
-		repeat([{str: 'WALK', seconds: 30}, {str: 'MARAPACE', seconds: 4*60 + 30}, ], 2), 
-		repeat([{str: 'WALK', seconds: 30}, {str: 'FASTER',   seconds: 4*60 + 30}, ], 2), 
-		repeat([{str: 'WALK', seconds: 30}, {str: 'EASY',     seconds: 4*60 + 30}, ], 2), 
-		repeat([{str: 'OVER', seconds: 9*60 + 59}], 99)
-	);
-};
-
-{
-	RUN_NAME_TO_SEGMENTS["Week 13 Run 3"] = [].concat(
-		repeat([{str: 'WALK', seconds: 30}, {str: 'EASY',     seconds: 4*60 + 30}, ], 1), 
-		repeat([{str: 'WALK', seconds: 30}, {str: 'MARAPACE', seconds: 4*60 + 30}, ], 7), 
-		repeat([{str: 'WALK', seconds: 30}, {str: 'EASY',     seconds: 4*60 + 30}, ], 1), 
-		repeat([{str: 'WALK', seconds: 30}, {str: 'TEMPO',    seconds: 4*60 + 30}, ], 1), 
-		repeat([{str: 'WALK', seconds: 30}, {str: 'EASY',     seconds: 4*60 + 30}, ], 2),
-		repeat([{str: 'OVER', seconds: 9*60 + 59}], 99)
-	);
-};
-
 {
 	let walkSeconds = 45;
-	RUN_NAME_TO_SEGMENTS["Week 13 Run 2"] = [].concat(
+	RUN_NAME_TO_SEGMENTS["5 MIN TEMPO"] = [].concat(
 		repeat([
 			{str: 'WALK', seconds: 30}, 
 			{str: 'EASY', seconds: 4*60 + 30}, 
@@ -104,48 +43,6 @@ RUN_NAME_TO_SEGMENTS["0:15/2:15"] = [{str: 'WALK', seconds: 15}, {str: 'RUN', se
 		], 99)
 	);
 };
-
-RUN_NAME_TO_SEGMENTS["Week 12 Run 2"] = [].concat(
-	repeat([
-		{str: 'WALK', seconds: 30}, 
-		{str: 'EASY', seconds: 4*60 + 30}, 
-	], 1), 
-
-	repeat([
-		{str: 'WALK', seconds: 30}, 
-		{str: 'MARAPACE', seconds: 4*60 + 30}, 
-	], 8), 
-
-	repeat([
-		{str: 'WALK', seconds: 30}, 
-		{str: 'EASY', seconds: 4*60 + 30}, 
-	], 1), 
-
-	repeat([
-		{str: 'OVER', seconds: 9*60 + 59}
-	], 99)
-);
-
-RUN_NAME_TO_SEGMENTS["Week 11 Run 3"] = [].concat(
-	repeat([
-		{str: 'WALK', seconds: 30}, 
-		{str: 'EASY', seconds: 4*60 + 30}, 
-	], 2), 
-
-	repeat([
-		{str: 'WALK', seconds: 30}, 
-		{str: 'MARAPACE', seconds: 4*60 + 30}, 
-	], 6), 
-
-	repeat([
-		{str: 'WALK', seconds: 30}, 
-		{str: 'EASY', seconds: 4*60 + 30}, 
-	], 2), 
-
-	repeat([
-		{str: 'OVER', seconds: 9*60 + 59}
-	], 99)
-);
 
 function drawTimeOfDay() {
 	// X/Y are the position of the bottom right of the HH:MM text 
@@ -360,17 +257,16 @@ if(isRunningUnderNode) {
 
 	if(process.argv[2] === '--scratch') {
 		// this "scratch code" is not to be confused with the "scratch run" (= "the run named scratch").
-		
+
 
 	} else if(process.argv.length == 2) { // ==> no args ==> print info about programmed runs 
 		let runNames = Object.keys(RUN_NAME_TO_SEGMENTS);
-		for(let i = runNames.length-1; i >= 0 ; i--) {
-			let runName = runNames[i];
-			let segments = RUN_NAME_TO_SEGMENTS[runName];
-			let walkPercentage = getWalkPercentageFromSegments(segments);
-			let totalMinutes = getTotalMinutesFromSegments(segments);
+		for(let runName of runNames) {
+			let runSegments = RUN_NAME_TO_SEGMENTS[runName];
+			let walkPercentage = getWalkPercentageFromSegments(runSegments);
+			let totalMinutes = getTotalMinutesFromSegments(runSegments);
 			console.log(`${runName}:`);
-			for(let segment of segments) {
+			for(let segment of runSegments) {
 				if(segment.str === 'OVER') break;
 				console.log(`\t${segment.str} ${getMinutesColonSecondsStrFromSeconds(segment.seconds)}`);
 			}
@@ -386,7 +282,7 @@ function writeToFile(destFilename_, string_) {
 	require("Storage").write(destFilename_, string_);
 }
 
-/* On 2025-10-01 I found one different in the output of this function depending on whether this program is running in "play mode" vs. "install mode": in play mode, stepCounterThresholdHigh=0.  in installed mode, stepCounterThresholdHigh=1073747204.  I don't get it. */
+/* On 2025-10-01 I found one difference in the output of this function depending on whether this program is running in "play mode" vs. "install mode": in play mode, stepCounterThresholdHigh=0.  in installed mode, stepCounterThresholdHigh=1073747204.  I don't get it. */
 function printEnvironmentInfo() {
 
 	let logLines = [];
