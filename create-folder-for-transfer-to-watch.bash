@@ -32,7 +32,7 @@ EOF
 	exit 1
 fi
 
-dest_dir=/tmp/bangle-js-run-walk-galloway-for-transfer-to-watch
+dest_dir="${TMPDIR:-/tmp}/bangle-js-run-walk-galloway-for-transfer-to-watch"
 
 if [[ -d "$dest_dir" ]] ; then 
 	rm -r "$dest_dir"
