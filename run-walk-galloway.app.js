@@ -20,6 +20,7 @@ let RUN_NAME_TO_SEGMENTS = {};
 RUN_NAME_TO_SEGMENTS["0:30/4:30"] = [{str: 'WALK', seconds: 30}, {str: 'RUN', seconds: 4*60 + 30}];
 
 {
+	// inspired by london improvers plan 2025 week 13 run 2. 
 	let walkSeconds = 45;
 	RUN_NAME_TO_SEGMENTS["5 MIN TEMPO"] = [].concat(
 		repeat([
