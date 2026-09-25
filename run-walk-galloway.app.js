@@ -358,8 +358,9 @@ let isRunningUnderNode = typeof process !== "undefined"  && process.versions != 
 
 if(isRunningUnderNode) {
 
-	if(process.argv[2] === '--scratch') { // i.e. run this: node run-walk-galloway.app.js --scratch 
-
+	if(process.argv[2] === '--scratch') {
+		// this "scratch code" is not to be confused with the "scratch run" (= "the run named scratch").
+		
 
 	} else if(process.argv.length == 2) { // ==> no args ==> print info about programmed runs 
 		let runNames = Object.keys(RUN_NAME_TO_SEGMENTS);
